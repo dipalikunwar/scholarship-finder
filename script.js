@@ -45,24 +45,6 @@ case "Netherlands": return "nl"
 
 
 
-function getDeadlineDays(month){
-
-const months={
-April:3,May:4,June:5,July:6,August:7,September:8
-}
-
-let now=new Date()
-
-let deadline=new Date(2026,months[month],1)
-
-let diff=deadline-now
-
-return Math.ceil(diff/(1000*60*60*24))
-
-}
-
-
-
 function displayScholarships(data){
 
 scholarshipList.innerHTML=""
@@ -75,7 +57,7 @@ card.className="card"
 
 card.innerHTML = `
 
-<div class="cart">🛒</div>
+<div class="cart" onclick="saveScholarship('${s.title}')">🛒</div>
 
 <h3 class="title">${s.title}</h3>
 
@@ -92,7 +74,7 @@ ${s.amount===0 ? "✔ Full Funding" : "$"+s.amount}
 📅 Deadline: ${s.deadline}
 </div>
 
-<button class="view-btn">
+<button class="view-btn" onclick="showDetails('${s.title}','${s.country}','${s.amount}','${s.deadline}')">
 View Details →
 </button>
 
@@ -108,6 +90,8 @@ displayScholarships(currentData)
 
 
 
+// Load More
+
 document.getElementById("loadMore").onclick=()=>{
 
 visibleCount+=3
@@ -117,6 +101,8 @@ displayScholarships(currentData)
 }
 
 
+
+// Search
 
 document.getElementById("searchInput").addEventListener("keyup",function(){
 
@@ -132,25 +118,30 @@ displayScholarships(currentData)
 
 
 
-document.querySelector(".apply").onclick=()=>{
+// Apply Filters
+document.querySelector(".apply").onclick = () => {
 
-let checked=[...document.querySelectorAll(".country-filter:checked")].map(e=>e.value)
+let checked = [...document.querySelectorAll(".country-filter:checked")].map(e => e.value)
 
-if(checked.length===0){
+if(checked.length === 0){
 
-currentData=[...storedData]
+currentData = [...storedData]
 
 }else{
 
-currentData=storedData.filter(s=>checked.includes(s.country))
+currentData = storedData.filter(s => checked.includes(s.country))
 
 }
+
+visibleCount = currentData.length   // important fix
 
 displayScholarships(currentData)
 
 }
 
 
+
+// Reset Filters
 
 document.querySelector(".reset").onclick=()=>{
 
@@ -158,11 +149,15 @@ document.querySelectorAll(".country-filter").forEach(cb=>cb.checked=false)
 
 currentData=[...storedData]
 
+visibleCount=3
+
 displayScholarships(currentData)
 
 }
 
 
+
+// Wishlist Save
 
 function saveScholarship(title){
 
@@ -172,11 +167,13 @@ saved.push(title)
 
 localStorage.setItem("saved",JSON.stringify(saved))
 
-alert("Saved!")
+alert("Scholarship saved!")
 
 }
 
 
+
+// Modal
 
 function showDetails(title,country,amount,deadline){
 
@@ -202,6 +199,8 @@ document.getElementById("detailsModal").style.display="none"
 
 
 
+// Dark Mode
+
 document.getElementById("darkToggle").onclick=()=>{
 
 document.body.classList.toggle("dark")
@@ -209,6 +208,8 @@ document.body.classList.toggle("dark")
 }
 
 
+
+// Stats
 
 document.getElementById("totalScholarships").innerText=storedData.length
 
